@@ -1,7 +1,6 @@
-// src/docs/paths/product.paths.ts
-
 import { ProductSchema } from '../../schemas/product.schema';
 import { registry } from '../registry';
+
 export function registerProductPaths() {
     registry.register('Product', ProductSchema);
 
@@ -21,5 +20,28 @@ export function registerProductPaths() {
         },
     });
 
-    // Add more product-related endpoints here...
+    registry.registerPath({
+        method: 'get',
+        path: '/products/{id}',
+        description: 'Get a product by id',
+        parameters: [
+            {
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: { type: 'string' },
+                description: 'Product ID',
+            },
+        ],
+        responses: {
+            200: {
+                description: 'Successful response',
+                content: {
+                    'application/json': {
+                        schema: ProductSchema,
+                    },
+                },
+            },
+        },
+    });
 }

@@ -10,8 +10,8 @@ export const ProductSchema = z.object({
     description: z.string(),
     imageUrl: z.string().url(),
     categoryId: z.number(),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
     statusId: z.number(),
 });
 
