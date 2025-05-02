@@ -10,5 +10,9 @@ class ProductService {
     getProductById(id: number) {
         return productRepository.getProductById(id)
     }
+
+    createProduct(product: Product) {
+        return productRepository.createProduct(product)
+    }
 }
 export default new ProductService

@@ -15,6 +15,13 @@ class ProductController {
         res.json(product);
 
     }
+    async createProduct(req: Request, res: Response) {
+
+        const product = await req.body;
+
+        await productService.createProduct(product);
+        res.status(201).json({ message: "Product created successfully" });
+    }
 }
 
 export default new ProductController();

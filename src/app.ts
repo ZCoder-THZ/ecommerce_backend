@@ -4,12 +4,18 @@ import { PrismaClient } from "@prisma/client";
 import { Server } from "socket.io";
 import router from "./routes/router";
 import { openAPIRouter } from "./api-docs/openAPIRouter";
+import bodyParser from "body-parser";
+
 const app = express();
 const server = http.createServer(app);
 const prisma = new PrismaClient();
-app.use('/docs', openAPIRouter)
 
-app.use(router)
+// ✅ Use body-parser
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/docs', openAPIRouter);
+app.use(router);
 
 // Prisma graceful shutdown
 process.on('SIGINT', async () => {

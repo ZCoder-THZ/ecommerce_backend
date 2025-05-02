@@ -14,6 +14,12 @@ class ProductRepository {
             }
         })
     }
+
+    async createProduct(product: Product): Promise<Product> {
+        return await prismaClient.product.create({
+            data: product
+        })
+    }
 }
 
 export default new ProductRepository()

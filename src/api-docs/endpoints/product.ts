@@ -2,6 +2,7 @@ import { ProductSchema } from '../../schemas/product.schema';
 import { registry } from '../registry';
 
 export function registerProductPaths() {
+    // Register the component first
     registry.register('Product', ProductSchema);
 
     registry.registerPath({
@@ -13,7 +14,7 @@ export function registerProductPaths() {
                 description: 'Successful response',
                 content: {
                     'application/json': {
-                        schema: ProductSchema.array(),
+                        schema: ProductSchema.array(), // Use the schema directly
                     },
                 },
             },
@@ -36,6 +37,33 @@ export function registerProductPaths() {
         responses: {
             200: {
                 description: 'Successful response',
+                content: {
+                    'application/json': {
+                        schema: ProductSchema, // Use the schema directly
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        method: 'post',
+        path: '/products',
+        description: 'Create a new product',
+        requestBody: {
+            required: true,
+            content: {
+                'application/json': {
+
+                    schema: {
+                        $ref: '#/components/schemas/Product' //reference to the schema  registry.register('Product', ProductSchema); up there,
+                    },
+                },
+            },
+        },
+        responses: {
+            201: {
+                description: 'Product created successfully',
                 content: {
                     'application/json': {
                         schema: ProductSchema,
