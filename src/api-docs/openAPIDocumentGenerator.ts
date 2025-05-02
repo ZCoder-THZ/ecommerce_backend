@@ -1,10 +1,17 @@
-import {
-  OpenAPIRegistry,
-  OpenApiGeneratorV3,
-} from '@asteasolutions/zod-to-openapi';
+// src/docs/openapi.ts
+import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
+import { registry } from './registry';
+
+import { registerProductPaths } from './endpoints/product';
+// import { registerUserPaths } from './paths/user.paths';
+// import { registerOrderPaths } from './paths/order.paths';
 
 export function generateOpenAPIDocument() {
-  const registry = new OpenAPIRegistry([]);
+  // Register all paths
+  registerProductPaths();
+  // registerUserPaths();
+  // registerOrderPaths();
+
   const generator = new OpenApiGeneratorV3(registry.definitions);
 
   return generator.generateDocument({
@@ -17,5 +24,6 @@ export function generateOpenAPIDocument() {
       description: 'View the raw OpenAPI Specification in JSON format',
       url: '/swagger.json',
     },
+
   });
 }

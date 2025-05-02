@@ -117,6 +117,9 @@ export default class NotificationService {
 
 
     async getUserNotifications(userId: string) {
+        console.log(
+            'getting notificaitons'
+        )
         return this.prisma.notification.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },

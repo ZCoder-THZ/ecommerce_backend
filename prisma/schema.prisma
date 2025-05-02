@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-
+  generator 
 }
 
 model Account {
@@ -21,11 +21,10 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@index([userId])
-  @@map("accounts")
 }
 
 model Session {
@@ -33,34 +32,21 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
-  @@map("sessions")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  email          String?         @unique
-  emailVerified  DateTime?
-  image          String?
-  role           Int             @default(0)
-  password       String?
-  accounts       Account[]
-  assignedIssues Issue[]         @relation("UserAssignedIssues")
-  issues         Issue[]         @relation("UserIssues")
-  sessions       Session[]
-  
-  // Received notifications (as receiver)
-  receivedNotifications Notification[] @relation("NotificationReceiver")
-  
-  // Sent notifications (as sender)
-  sentNotifications Notification[] @relation("NotificationSender")
-  
-  issueCommands  IssueCommand[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(USER)
 
-  @@map("users")
+  accounts Account[]
+  sessions Session[]
+  orders   Order[]
 }
 
 model VerificationToken {
@@ -69,93 +55,135 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-  @@map("verificationtokens")
 }
 
-model Issue {
-  id               Int             @id @default(autoincrement())
-  title            String
-  description      String
-  status           IssueStatus     @default(OPEN)
-  priority         IssuePriority   @default(low)
-  assignedDate     DateTime?
-  deadlineDate     DateTime?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  userId           String
-  assignedToUserId String?
-  assignedToUser   User?           @relation("UserAssignedIssues", fields: [assignedToUserId], references: [id])
-  user             User            @relation("UserIssues", fields: [userId], references: [id])
-  notifications    Notification[]
-  issueCommands    IssueCommand[]
-  issueImages      IssueImage[]
-
-  @@index([userId])
-  @@index([assignedToUserId])
-  @@map("issues")
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  iconUrl   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
-model IssueImage {
-  id       Int    @id @default(autoincrement())
-  issueId  Int
-  imageUrl String
-  issue    Issue  @relation(fields: [issueId], references: [id], onDelete: Cascade)
-
-  @@index([issueId])
-  @@map("issue_images")
-}
-
-model Notification {
-  id        Int      @id @default(autoincrement())
-  title     String   // Added title for better context
-  message   String
-  type      String   // e.g., "assignment", "mention", "system"
-  read      Boolean  @default(false) // Mark as read status
-  createdAt DateTime @default(now())
-  
-  // Foreign keys
-  userId    String   // receiver ID
-  senderId  String   // sender ID
-  issueId   Int?
-
-  // Relations
-  receiver  User     @relation("NotificationReceiver", fields: [userId], references: [id], onDelete: Cascade)
-  sender    User     @relation("NotificationSender", fields: [senderId], references: [id], onDelete: Cascade)
-  issue     Issue?   @relation(fields: [issueId], references: [id], onDelete: Cascade)
-  user       User     @relation("UserNotifications", fields: [userId], references: [id])
-  // Indexes
-  @@index([userId])
-  @@index([senderId])
-  @@index([issueId])
-  @@index([read])    // Added index for frequently queried field
-  @@map("notifications")
-}
-
-model IssueCommand {
+model Product {
   id          Int      @id @default(autoincrement())
-  issueId     Int
-  userId      String
-  timestamp   DateTime @default(now())
-  text        String
-  likes       Int      @default(0)
-  replies     Json     @default("[]")
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  issue       Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  imageUrl    String?
+  categoryId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  statusId    Int
 
-  @@index([issueId])
+  category Category       @relation(fields: [categoryId], references: [id])
+  status   ProductStatus  @relation(fields: [statusId], references: [id])
+  images   ProductImage[]
+  stock    Stock[]
+
+  @@index([categoryId])
+  @@index([statusId])
+}
+
+model ProductStatus {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+
+  products Product[]
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+}
+
+model Stock {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  sku       String
+  stock     Int
+  price     Float
+  size      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product    Product     @relation(fields: [productId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([productId])
+}
+
+model Order {
+  id              Int       @id @default(autoincrement())
+  orderDate       DateTime
+  userId          String
+  totalAmount     Float
+  paymentStatus   String
+  paymentMethodId Int
+  orderStatus     String?
+  shippingAddress String?
+  billingAddress  String?
+  sailDate        DateTime?
+  deliverySteps   Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+
+  orderItems OrderItem[]
+
   @@index([userId])
-  @@map("issue_commands")
+  @@index([paymentMethodId])
 }
 
-enum IssueStatus {
-  OPEN
-  IN_PROGRESS
-  CLOSED
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  stockId    Int
+  quantity   Int
+  unitPrice  Float
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  stock Stock @relation(fields: [stockId], references: [id])
+
+  @@index([orderId])
+  @@index([stockId])
 }
 
-enum IssuePriority {
-  high
-  medium
-  low
-  lowest
+model PaymentMethod {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  orders Order[]
+}
+
+model HomePageBannner {
+  id        Int          @id @default(autoincrement())
+  title     String?
+  imageUrl  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  status    BannerStatus @default(ACTIVE)
+}
+
+enum BannerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum Role {
+  USER
+  ADMIN
 }

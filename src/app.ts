@@ -2,52 +2,14 @@ import express from "express";
 import http from "http";
 import { PrismaClient } from "@prisma/client";
 import { Server } from "socket.io";
-import { SocketAuthService } from "./services/SocketAuthService";
-import { SocketEventHandler } from "./services/SocketEventHandler";
-import NotificationService from "./services/NotificationService";
-
+import router from "./routes/router";
+import { openAPIRouter } from "./api-docs/openAPIRouter";
 const app = express();
 const server = http.createServer(app);
 const prisma = new PrismaClient();
-const io = new Server(server);
+app.use('/docs', openAPIRouter)
 
-// Initialize services
-const notificationService = new NotificationService(io);
-const socketAuthService = new SocketAuthService(prisma);
-const socketEventHandler = new SocketEventHandler(notificationService);
-
-// Socket.IO Authentication
-io.use((socket, next) => socketAuthService.authenticate(socket, next));
-
-// Socket.IO Event Handling
-io.on("connection", (socket) => {
-  socketEventHandler.handleConnection(socket);
-
-  // Notification events
-  socket.on("get-notifications", (callback) =>
-    socketEventHandler.handleGetNotifications(socket, callback));
-
-  socket.on("mark-as-read", (notificationId, callback) =>
-    socketEventHandler.handleMarkAsRead(socket, notificationId, callback));
-
-  socket.on("mark-all-read", (callback) =>
-    socketEventHandler.handleMarkAllAsRead(socket, callback));
-
-  // socket.on("send-admin-notification", (data) =>
-  //   socketEventHandler.handleAdminNotification(socket, data));
-
-  // Issue-related notifications
-  socket.on("issue-created", (data) =>
-    socketEventHandler.handleIssueCreationNotification(data));
-
-  socket.on("issue-approved", (data) =>
-    socketEventHandler.handleIssueApprovalNotification(data));
-
-  // Add other issue-related events...
-
-  socket.on("disconnect", () =>
-    socketEventHandler.handleDisconnect(socket));
-});
+app.use(router)
 
 // Prisma graceful shutdown
 process.on('SIGINT', async () => {

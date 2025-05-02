@@ -29,6 +29,18 @@ export class SocketEventHandler {
         }
     }
 
+    async handleAdminNotification(socket: Socket, data: any) {
+        try {
+            const notification = await this.notificationService.createNotification(data);
+            if (!notification) {
+                return socket.emit("send-admin-notification", { success: false, error: "Failed to send notification" });
+            }
+            socket.emit("send-admin-notification", { success: true });
+        } catch (error) {
+            console.error('Error sending admin notification:', error);
+            socket.emit("send-admin-notification", { success: false, error: "Failed to send notification" });
+        }
+    }
 
     async handleMarkAsRead(socket: Socket, notificationId: number, callback: Function) {
         try {

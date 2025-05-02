@@ -12,8 +12,8 @@ importers:
         specifier: ^7.3.0
         version: 7.3.0(zod@3.24.3)
       '@prisma/client':
-        specifier: ^5.22.0
-        version: 5.22.0(prisma@6.6.0(typescript@5.8.3))
+        specifier: 6.6.0
+        version: 6.6.0(prisma@6.6.0(typescript@5.8.3))(typescript@5.8.3)
       bcrypt:
         specifier: ^5.1.1
         version: 5.1.1
@@ -88,7 +88,7 @@ importers:
         specifier: ^3.0.2
         version: 3.1.10
       prisma:
-        specifier: ^6.1.0
+        specifier: 6.6.0
         version: 6.6.0(typescript@5.8.3)
       ts-node:
         specifier: ^10.9.2
@@ -272,13 +272,16 @@ packages:
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
     hasBin: true
 
-  '@prisma/client@5.22.0':
-    resolution: {integrity: sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA==}
-    engines: {node: '>=16.13'}
+  '@prisma/client@6.6.0':
+    resolution: {integrity: sha512-vfp73YT/BHsWWOAuthKQ/1lBgESSqYqAWZEYyTdGXyFAHpmewwWL2Iz6ErIzkj4aHbuc6/cGSsE6ZY+pBO04Cg==}
+    engines: {node: '>=18.18'}
     peerDependencies:
       prisma: '*'
+      typescript: '>=5.1.0'
     peerDependenciesMeta:
       prisma:
+        optional: true
+      typescript:
         optional: true
 
   '@prisma/config@6.6.0':
@@ -1262,9 +1265,10 @@ snapshots:
       - encoding
       - supports-color
 
-  '@prisma/client@5.22.0(prisma@6.6.0(typescript@5.8.3))':
+  '@prisma/client@6.6.0(prisma@6.6.0(typescript@5.8.3))(typescript@5.8.3)':
     optionalDependencies:
       prisma: 6.6.0(typescript@5.8.3)
+      typescript: 5.8.3
 
   '@prisma/config@6.6.0':
     dependencies:
