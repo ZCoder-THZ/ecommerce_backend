@@ -116,7 +116,7 @@ model Stock {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  product    Product     @relation(fields: [productId], references: [id])
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
 
   @@index([productId])
@@ -157,7 +157,7 @@ model OrderItem {
   updatedAt  DateTime @updatedAt
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  stock Stock @relation(fields: [stockId], references: [id])
+  stock Stock @relation(fields: [stockId], references: [id],onDelete: Cascade)
 
   @@index([orderId])
   @@index([stockId])

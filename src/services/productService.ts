@@ -14,5 +14,11 @@ class ProductService {
     createProduct(product: Product) {
         return productRepository.createProduct(product)
     }
+    deleteProduct(id: number) {
+        return productRepository.delteProductById(id)
+    }
+    updateProduct(id: number, product: Product) {
+        return productRepository.updateProductById(id, product)
+    }
 }
 export default new ProductService

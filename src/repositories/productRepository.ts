@@ -20,6 +20,24 @@ class ProductRepository {
             data: product
         })
     }
+
+    async delteProductById(id: number): Promise<Product | Error> {
+
+        return await prismaClient.product.delete({
+            where: {
+                id
+            }
+        })
+
+    }
+    async updateProductById(id: number, product: Product): Promise<Product> {
+        return await prismaClient.product.update({
+            where: {
+                id
+            },
+            data: product
+        })
+    }
 }
 
 export default new ProductRepository()
