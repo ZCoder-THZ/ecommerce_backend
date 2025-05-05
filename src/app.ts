@@ -1,6 +1,6 @@
 import express from "express";
 import http from "http";
-import { PrismaClient } from "@prisma/client";
+import { prismaClient } from "./lib/prismaClient";
 import { Server } from "socket.io";
 import router from "./routes/router";
 import { openAPIRouter } from "./api-docs/openAPIRouter";
@@ -8,7 +8,7 @@ import bodyParser from "body-parser";
 
 const app = express();
 const server = http.createServer(app);
-const prisma = new PrismaClient();
+
 
 // ✅ Use body-parser
 app.use(bodyParser.json({ limit: '100mb' }));
@@ -20,7 +20,7 @@ app.use(router);
 // Prisma graceful shutdown
 process.on('SIGINT', async () => {
   console.log('Shutting down server...');
-  await prisma.$disconnect();
+  await prismaClient.$disconnect();
   process.exit(0);
 });
 

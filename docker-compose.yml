@@ -1,54 +1,37 @@
-version: '3.8'
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://admin:secret@db:5432/ecommerce
+      - TOKEN_SECRET=038ffdf1548e71e7340dbf5d33cc6e811bace472895fdda7c226a91c27e65425437a7f840ddbd5ede8d642dab4f94c45e7adb3fa2ee8bb214d36e8846ce1b9aa
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "pnpm dev"
+    
   db:
-    container_name: postgres
-    image: postgres:16.8-alpine3.20
+    image: postgres:15
+    container_name: postgres-db
     restart: always
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
-      POSTGRES_DB: issue-back
+      POSTGRES_DB: ecommerce
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d issue-back"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d ecommerce"]
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - app-network
-
-  init-db:
-    image: node:18-alpine
-    depends_on:
-      db:
-        condition: service_healthy
-    working_dir: /app
-    volumes:
-      - .:/app
-    environment:
-      DATABASE_URL: "postgresql://admin:secret@postgres:5432/issue-back"
-    command: ["sh", "-c", "npx prisma generate && npx prisma db push"]
-    networks:
-      - app-network
-
-  app:
-    build: .
-    depends_on:
-      - init-db
-    environment:
-      DATABASE_URL: "postgresql://admin:secret@postgres:5432/issue-back"
-    ports:
-      - "4000:4000"
-    command: ["node", "dist/app.js"]
-    networks:
-      - app-network
 
 volumes:
-  pgdata:
-
-networks:
-  app-network:
-    driver: bridge
+  pg-data:
