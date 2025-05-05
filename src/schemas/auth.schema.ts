@@ -26,6 +26,11 @@ export const jwtPayloadSchema = z.object({
 
 export const registerSchema = userSchema.pick({
     name: true,
-    email: true, // ✅ Forces email to be required
+    email: true,
+    password: true,
+});
+
+export const loginSchema = userSchema.pick({
+    email: true,
     password: true,
 });

@@ -1,12 +1,10 @@
 import { z } from 'zod';
 import { BaseDto } from './base.dto';
 
-import { registerSchema } from '../schemas/auth.schema';
+import { registerSchema, loginSchema } from '../schemas/auth.schema';
 
-
-// ✅ This ensures 'role' is NOT possibly undefined after default applied
 export type CreateUserDto = z.output<typeof registerSchema>;
-
+export type LoginUserDto = z.output<typeof loginSchema>;
 export class UserCreateDto extends BaseDto<CreateUserDto> {
     constructor() {
         super(
@@ -14,5 +12,14 @@ export class UserCreateDto extends BaseDto<CreateUserDto> {
         );
     }
 }
+export class UserLoginDto extends BaseDto<LoginUserDto> {
+    constructor() {
+        super(
+            loginSchema
+        );
+    }
+}
+
 
 export const createUserDto = () => new UserCreateDto();
+export const loginUserDto = () => new UserLoginDto();

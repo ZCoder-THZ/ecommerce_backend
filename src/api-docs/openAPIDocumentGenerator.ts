@@ -1,16 +1,13 @@
 // src/docs/openapi.ts
 import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
 import { registry } from './registry';
-
 import { registerProductPaths } from './endpoints/product';
-// import { registerUserPaths } from './paths/user.paths';
-// import { registerOrderPaths } from './paths/order.paths';
+import { registerAuthPath } from './endpoints/auth';
 
 export function generateOpenAPIDocument() {
-  // Register all paths
-  registerProductPaths();
-  // registerUserPaths();
-  // registerOrderPaths();
+  // Register all paths with their respective tags
+  registerProductPaths(); // These will use 'Products' tag
+  registerAuthPath();   // These will use 'Auth' tag
 
   const generator = new OpenApiGeneratorV3(registry.definitions);
 
@@ -19,11 +16,21 @@ export function generateOpenAPIDocument() {
     info: {
       version: '1.0.0',
       title: 'Swagger API',
+      description: 'API Documentation with grouped endpoints',
     },
+    tags: [
+      {
+        name: 'Products',
+        description: 'Operations related to products',
+      },
+      {
+        name: 'Auth',
+        description: 'Authentication and authorization operations',
+      },
+    ],
     externalDocs: {
       description: 'View the raw OpenAPI Specification in JSON format',
       url: '/swagger.json',
     },
-
   });
 }

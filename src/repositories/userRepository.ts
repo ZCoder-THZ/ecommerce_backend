@@ -1,9 +1,11 @@
 import { prismaClient } from "../lib/prismaClient";
-import { registerType } from "../types/auth";
+import { RegisterType } from "../types/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
+
 class UserRepository {
 
-    async createSingleUser(registerData: registerType): Promise<any> {
+    async createSingleUser(registerData: RegisterType): Promise<any> {
         try {
 
             return await prismaClient.user.create({
@@ -22,7 +24,7 @@ class UserRepository {
             }
         }
     }
-    async findUserByEmail(email: string) {
+    async findUserByEmail(email: string): Promise<any> {
         try {
 
             return await prismaClient.user.findUnique({

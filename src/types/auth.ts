@@ -5,4 +5,6 @@ export const registerSchema = z.object({
     password: z.string().min(6),
 });
 
-export type registerType = z.infer<typeof registerSchema>
+export type RegisterType = z.infer<typeof registerSchema>
+export type LoginType = Omit<RegisterType, 'name'>
+

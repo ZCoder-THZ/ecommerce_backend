@@ -1,63 +1,144 @@
-import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import { userRepository } from '../repositories/userRepository';
+import { RegisterType, LoginType } from '../types/auth';
 
-import { registerType } from '../types/auth';
-interface Payload {
+
+interface TokenPayload {
     id: string;
     role: number;
     name: string;
 }
+
 class AuthService {
-    generateToken(user: Payload): string {
-        const payload: Payload = {
-            id: user.id,
-            role: user.role,
-            name: user.name,
-        };
+    private readonly saltRounds: number = 10;
 
-        const token = jwt.sign(payload, process.env.TOKEN_SECRET as Secret, {
-            expiresIn: '1h',
-        });
 
-        return token;
+    public generateToken(user: TokenPayload): string {
+
+        const secret = process.env.TOKEN_SECRET;
+        if (!secret) {
+            throw new Error('TOKEN_SECRET environment variable is not set');
+        }
+
+
+        return jwt.sign(
+            user,
+            secret,
+            { expiresIn: '1h' }
+        );
     }
 
-    verifyToken(token: string): JwtPayload | string {
+    public verifyToken(token: string): TokenPayload | null {
         try {
-            const decoded = jwt.verify(token, process.env.TOKEN_SECRET as Secret);
-            return decoded;
+            const secret = process.env.TOKEN_SECRET;
+            if (!secret) {
+                throw new Error('TOKEN_SECRET environment variable is not set');
+            }
+
+            const decoded = jwt.verify(token, secret);
+            return decoded as TokenPayload;
         } catch (error) {
-            return 'Invalid token';
+            return null;
         }
     }
 
-    async register(userRegistrationData: registerType) {
-        const existingUser = await userRepository.findUserByEmail(userRegistrationData.email);
+
+    public async register(userData: RegisterType) {
+
+        const existingUser = await userRepository.findUserByEmail(userData.email);
         if (existingUser) {
             return {
-                error: "Email already in use",
-                data: null
+                success: false,
+                error: 'Email already in use',
+                data: null,
             };
         }
 
-        const newUser = await userRepository.createSingleUser(userRegistrationData);
-        if (!newUser) {
+        try {
+
+            const hashedPassword = await bcrypt.hash(userData.password, this.saltRounds);
+
+
+            const newUser = await userRepository.createSingleUser({
+                ...userData,
+                password: hashedPassword,
+            });
+
+            if (!newUser) {
+                return {
+                    success: false,
+                    error: 'Failed to create user',
+                    data: null,
+                };
+            }
+
+
+            const token = this.generateToken({
+                id: newUser.id,
+                role: newUser.role === 'ADMIN' ? 1 : 0,
+                name: newUser.name ?? '',
+            });
+
             return {
-                error: "Failed to create user",
-                data: null
+                success: true,
+                error: null,
+                data: newUser,
+                token,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown registration error',
+                data: null,
             };
         }
-
-        const token = this.generateToken({
-            id: newUser.id,
-            role: newUser.role === 'ADMIN' ? 1 : 0,
-            name: newUser.name ?? '',
-        });
-
-        return { token, data: newUser };
     }
 
 
+    public async login(credentials: LoginType) {
+        try {
+
+            const user = await userRepository.findUserByEmail(credentials.email);
+            if (!user || !user.password) {
+                return {
+                    success: false,
+                    error: 'Invalid email or password',
+                    data: null,
+                };
+            }
+
+
+            const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+            if (!isPasswordValid) {
+                return {
+                    success: false,
+                    error: 'Invalid email or password',
+                    data: null,
+                };
+            }
+
+
+            const token = this.generateToken({
+                id: user.id,
+                role: user.role === 'ADMIN' ? 1 : 0,
+                name: user.name ?? '',
+            });
+
+            return {
+                success: true,
+                error: null,
+                data: user,
+                token,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Authentication error',
+                data: null,
+            };
+        }
+    }
 }
 
 export default new AuthService();

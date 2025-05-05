@@ -9,6 +9,7 @@ export function registerProductPaths() {
     registry.registerPath({
         method: 'get',
         path: '/products',
+        tags: ['Products'],
         description: 'Get all products',
         responses: {
             200: {
@@ -26,6 +27,7 @@ export function registerProductPaths() {
         method: 'get',
         path: '/products/{id}',
         description: 'Get a product by id',
+        tags: ['Products'],
         parameters: [
             {
                 name: 'id',
@@ -50,6 +52,7 @@ export function registerProductPaths() {
     registry.registerPath({
         method: 'post',
         path: '/products',
+        tags: ['Products'],
         description: 'Create a new product',
         requestBody: {
             required: true,
@@ -76,6 +79,7 @@ export function registerProductPaths() {
     registry.registerPath({
         method: 'delete',
         path: '/products/{id}',
+        tags: ['Products'],
         description: 'Delete a product by id',
         parameters: [
             {
@@ -101,6 +105,7 @@ export function registerProductPaths() {
     registry.registerPath({
         method: 'patch',
         path: '/products/{id}',
+        tags: ['Products'],
         description: 'Update a product by id',
         parameters: [
             {
