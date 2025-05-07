@@ -1,7 +1,7 @@
 // src/api-docs/endpoints/order.ts
 import { OrderCreateSchema, OrderSchema, OrderItemCreateSchema } from '../../schemas/order.schema';
 import { registry } from '../registry';
-
+import z from 'zod'
 export function registerOrderPaths() {
     registry.register('OrderItemCreate', OrderItemCreateSchema);
     registry.register('OrderCreate', OrderCreateSchema);
@@ -60,6 +60,27 @@ export function registerOrderPaths() {
             },
             400: { description: 'Invalid Order ID' },
             404: { description: 'Order not found' },
+            500: { description: 'Internal server error' },
+        },
+    });
+    registry.registerPath({
+        method: 'get',
+        path: '/orders',
+        description: 'Get a list of all orders',
+        summary: 'Retrieve all orders (Admin access recommended)', // Add summary
+        tags: ['Orders'],
+        // TODO: Add parameters for pagination (query params: page, limit)
+        responses: {
+            200: {
+                description: 'A list of orders',
+                content: {
+                    'application/json': {
+                        // Use OrderSchema or create a summarized OrderListSchema
+                        schema: z.array(OrderSchema), // Adjust if using a summary schema
+                    },
+                },
+            },
+            // Add 401/403 responses once auth is added
             500: { description: 'Internal server error' },
         },
     });

@@ -96,10 +96,25 @@ class OrderService {
         });
     }
 
-    // Potentially add more methods like:
-    // - getUserOrders(userId: string)
-    // - updateOrderStatus(orderId: number, status: string)
-    // - cancelOrder(orderId: number) // This would also need to handle stock replenishment
+    async getAllOrders(options: { skip?: number; take?: number } = {}) {
+        const { skip, take } = options;
+        return prismaClient.order.findMany({
+            skip: skip,
+            take: take,
+            orderBy: {
+                orderDate: 'desc' // Default sort: newest first
+            },
+            include: {
+                // Include minimal related data for list view efficiency
+                user: { select: { id: true, name: true, email: true } },
+                paymentMethod: { select: { name: true } },
+                // Optionally include item count or summary instead of full items
+                _count: {
+                    select: { orderItems: true },
+                },
+            }
+        });
+    }
 }
 
 export default new OrderService();

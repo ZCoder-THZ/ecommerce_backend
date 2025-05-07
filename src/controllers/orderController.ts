@@ -56,4 +56,20 @@ export const getOrderByIdHandler = async (req: Request, res: Response, next: Nex
     } catch (error) {
         next(error);
     }
+
+
+};
+
+export const getOrdersHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        // Add logic here later for pagination from req.query (e.g., req.query.page, req.query.limit)
+        const options = {
+            // skip: ...,
+            // take: ...
+        };
+        const orders = await orderService.getAllOrders(options);
+        res.status(200).json(orders);
+    } catch (error) {
+        next(error); // Pass errors to global error handler
+    }
 };
