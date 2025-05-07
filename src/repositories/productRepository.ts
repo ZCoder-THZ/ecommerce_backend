@@ -12,7 +12,6 @@ class ProductRepository {
     }
 
 
-
     async getProductById(id: number): Promise<Product | null> {
         return await prismaClient.product.findUnique({
             where: {
