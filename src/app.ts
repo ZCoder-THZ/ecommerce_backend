@@ -17,7 +17,6 @@ const corsOptions = {
 };
 
 // ✅ Use CORS middleware before other middleware
-app.use(cors(corsOptions));
 
 // ✅ Use body-parser
 app.use(bodyParser.json({ limit: '100mb' }));
@@ -27,6 +26,7 @@ app.use('/docs', openAPIRouter);
 app.use(router);
 
 
+app.use(cors(corsOptions));
 
 // Prisma graceful shutdown
 process.on('SIGINT', async () => {

@@ -3,12 +3,12 @@ import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
 import { registry } from './registry';
 import { registerProductPaths } from './endpoints/product';
 import { registerAuthPath } from './endpoints/auth';
-
+import { registerCategoryPaths } from './endpoints/category';
 export function generateOpenAPIDocument() {
   // Register all paths with their respective tags
   registerProductPaths(); // These will use 'Products' tag
   registerAuthPath();   // These will use 'Auth' tag
-
+  registerCategoryPaths()
   const generator = new OpenApiGeneratorV3(registry.definitions);
 
   return generator.generateDocument({
