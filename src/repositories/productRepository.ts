@@ -2,15 +2,25 @@ import { prismaClient } from "../lib/prismaClient"
 import { Product } from "../schemas/product.schema";
 class ProductRepository {
     async getAllProducts(): Promise<Product[] | []> {
-        return await prismaClient.product.findMany()
+        return await prismaClient.product.findMany({
+            include: {
+                category: true,
+                stock: true
+            }
+        })
 
     }
+
 
 
     async getProductById(id: number): Promise<Product | null> {
         return await prismaClient.product.findUnique({
             where: {
-                id: Number(id)
+                id: Number(id),
+            },
+            include: {
+                category: true,
+                stock: true
             }
         })
     }
