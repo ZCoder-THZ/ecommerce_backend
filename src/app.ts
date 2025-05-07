@@ -9,24 +9,24 @@ import cors from "cors";
 
 const app = express();
 const server = http.createServer(app);
+
+// ✅ Use CORS middleware before other middleware
+
 const corsOptions = {
   origin: 'http://localhost:5173',
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   credentials: true, // if you need to allow cookies/credentials
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'] // allowed methods
 };
-
-// ✅ Use CORS middleware before other middleware
-
+app.use(cors(corsOptions));
+app.use(bodyParser.urlencoded({ extended: true }));
 // ✅ Use body-parser
 app.use(bodyParser.json({ limit: '100mb' }));
-app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/docs', openAPIRouter);
 app.use(router);
 
 
-app.use(cors(corsOptions));
 
 // Prisma graceful shutdown
 process.on('SIGINT', async () => {
