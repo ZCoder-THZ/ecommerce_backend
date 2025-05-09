@@ -8,6 +8,7 @@ services:
       - "5555:5555" 
     volumes:
       - .:/app
+      - /app/node_modules
     environment:
       - DATABASE_URL=postgresql://admin:secret@db:5432/ecommerce
       - TOKEN_SECRET=038ffdf1548e71e7340dbf5d33cc6e811bace472895fdda7c226a91c27e65425437a7f840ddbd5ede8d642dab4f94c45e7adb3fa2ee8bb214d36e8846ce1b9aa
@@ -18,7 +19,7 @@ services:
     
   db:
     image: postgres:15
-    container_name: postgres-db
+    container_name: postgres-db-lt
     restart: always
     environment:
       POSTGRES_USER: admin
