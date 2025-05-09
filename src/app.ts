@@ -49,7 +49,7 @@ app.use(fileUpload({
 app.use(PUBLIC_UPLOAD_PATH, express.static(uploadDirPath));
 console.log(`Serving static files from ${uploadDirPath} at ${PUBLIC_UPLOAD_PATH}`);
 
-app.use('/docs', openAPIRouter);
+app.use('/', openAPIRouter);
 
 app.use(router);
 
@@ -134,5 +134,5 @@ process.on('uncaughtException', (error) => {
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`API Docs available at http://localhost:${PORT}/docs`);
+  // console.log(`API Docs available at http://localhost:${PORT}/docs`);
 });
