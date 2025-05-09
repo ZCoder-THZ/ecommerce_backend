@@ -12,7 +12,7 @@ importers:
         specifier: ^7.3.0
         version: 7.3.0(zod@3.24.4)
       '@prisma/client':
-        specifier: ^6.6.0
+        specifier: ^6.7.0
         version: 6.7.0(prisma@6.6.0(typescript@5.8.3))(typescript@5.8.3)
       bcryptjs:
         specifier: ^3.0.2
@@ -69,6 +69,9 @@ importers:
       '@types/express':
         specifier: ^5.0.0
         version: 5.0.1
+      '@types/express-fileupload':
+        specifier: ^1.5.1
+        version: 1.5.1
       '@types/http-status-codes':
         specifier: ^1.2.0
         version: 1.2.0
@@ -319,11 +322,17 @@ packages:
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
 
+  '@types/busboy@1.5.4':
+    resolution: {integrity: sha512-kG7WrUuAKK0NoyxfQHsVE6j1m01s6kMma64E+OZenQABMQyTJop1DumUWcLwAQ2JzpefU7PDYoRDKl8uZosFjw==}
+
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
   '@types/cors@2.8.17':
     resolution: {integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==}
+
+  '@types/express-fileupload@1.5.1':
+    resolution: {integrity: sha512-DllImBVI1lCyjl2klky/TEwk60mbNebgXv1669h66g9TfptWSrEFq5a/raHSutaFzjSm1tmn9ypdNfu4jPSixQ==}
 
   '@types/express-serve-static-core@5.0.6':
     resolution: {integrity: sha512-3xhRnjJPkULekpSzgtoNYYcTWgEZkp4myc+Saevii5JPnHNvHMRlBSHDbs7Bh1iPPoVTERHEZXyhyLbMEsExsA==}
@@ -1118,6 +1127,10 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 22.15.3
 
+  '@types/busboy@1.5.4':
+    dependencies:
+      '@types/node': 22.15.3
+
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 22.15.3
@@ -1125,6 +1138,11 @@ snapshots:
   '@types/cors@2.8.17':
     dependencies:
       '@types/node': 22.15.3
+
+  '@types/express-fileupload@1.5.1':
+    dependencies:
+      '@types/busboy': 1.5.4
+      '@types/express': 5.0.1
 
   '@types/express-serve-static-core@5.0.6':
     dependencies:

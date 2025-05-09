@@ -35,10 +35,7 @@ export const createOrderHandler = async (req: Request, res: Response, next: Next
     }
 };
 
-/**
- * Handles fetching a specific order by its ID.
- * (No DTO needed for body validation here)
- */
+
 export const getOrderByIdHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const orderId = parseInt(req.params.id, 10);
@@ -62,7 +59,6 @@ export const getOrderByIdHandler = async (req: Request, res: Response, next: Nex
 
 export const getOrdersHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        // Add logic here later for pagination from req.query (e.g., req.query.page, req.query.limit)
         const options = {
             // skip: ...,
             // take: ...

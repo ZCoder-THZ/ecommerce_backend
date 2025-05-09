@@ -1,11 +1,13 @@
 import { prismaClient } from "../lib/prismaClient"
 import { Product } from "../schemas/product.schema";
+import { Prisma } from '@prisma/client';
 class ProductRepository {
     async getAllProducts(): Promise<Product[] | []> {
         return await prismaClient.product.findMany({
             include: {
                 category: true,
-                stock: true
+                stock: true,
+                images: true
             }
         })
 
@@ -19,7 +21,8 @@ class ProductRepository {
             },
             include: {
                 category: true,
-                stock: true
+                stock: true,
+                images: true
             }
         })
     }
@@ -39,13 +42,14 @@ class ProductRepository {
         })
 
     }
-    async updateProductById(id: number, product: Product): Promise<Product> {
+    async updateProductById(id: number, productUpdateData: Prisma.ProductUpdateInput): Promise<Product> {
         return await prismaClient.product.update({
             where: {
-                id
+                id: Number(id) // Ensure ID is a number
             },
-            data: product
-        })
+            // Pass the partial update data directly to Prisma's data argument
+            data: productUpdateData
+        }) as unknown as Product; // Keep assertion or refine return type mapping
     }
 }
 

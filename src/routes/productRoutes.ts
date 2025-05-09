@@ -1,13 +1,23 @@
-import { Express, Router } from "express";
-import ProductController from "../controllers/productController";
-import { validateRequest } from "../middlewares/validateRequest";
-import { ProductSchema, ProductUpdateSchema } from "../schemas/product.schema";
+// src/routes/productRoutes.ts
+import { Router } from "express";
+import {
+    getAllProductsHandler,
+    getProductByIdHandler,
+    createProductHandler,
+    updateProductHandler,
+    deleteProductHandler,
+    addProductImageHandler,
+    deleteProductImageHandler
+} from "../controllers/productController";
+
 const productRouter = Router();
 
-productRouter.get('/', ProductController.getAllProducts);
-productRouter.get('/:id', ProductController.getProductById).delete('/:id', ProductController.deleteProduct).patch('/:id', validateRequest(ProductUpdateSchema), ProductController.updateProduct);
-productRouter.post('/', validateRequest(ProductSchema), ProductController.createProduct);
+productRouter.get('/', getAllProductsHandler);
+productRouter.get('/:id', getProductByIdHandler);
+productRouter.post('/', createProductHandler);
+productRouter.patch('/:id', updateProductHandler);
+productRouter.delete('/:id', deleteProductHandler);
+productRouter.post('/:id/images', addProductImageHandler);
+productRouter.delete('/:id/images/:imageId', deleteProductImageHandler);
 
-
-
-export default productRouter
+export default productRouter;
