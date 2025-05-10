@@ -49,9 +49,9 @@ app.use(fileUpload({
 app.use(PUBLIC_UPLOAD_PATH, express.static(uploadDirPath));
 console.log(`Serving static files from ${uploadDirPath} at ${PUBLIC_UPLOAD_PATH}`);
 
-app.use('/', openAPIRouter);
 
 app.use(router);
+app.use('/', openAPIRouter);
 
 const globalErrorHandler: ErrorRequestHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
   console.error("Global Error Handler Caught:", err.name, "-", err.message);
